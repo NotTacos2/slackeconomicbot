@@ -21,16 +21,73 @@ app.command("/notdankmemer-ping", async ({ command, ack, respond }) => {
 app.command("/notdankmemer-grant", async ({ command, ack, respond}) => {
     await ack();
     const id = command.user_id;
-    const money = await db.get(`money_${id}`) || 0;
-    db.add(`money_${id}`, 30)
-    await respond({ text: `Granted $30!`});
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    db.add(`wallet_${id}`, 30)
+    await respond({ text: `Granted $30 into your wallet!`});
 });
 
 app.command("/notdankmemer-balance", async ({ command, ack, respond}) => {
     await ack();
     const id = command.user_id;
-    const money = await db.get(`money_${id}`) || 0;
-    await respond({ text: `Your have $${money} in your account`});
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    await respond({ text: `Your have $${wallet} in your wallet and $${bank} in your bank account`});
+});
+
+app.command("/notdankmemer-repeat", async ({command, ack, respond}) => {
+    await ack();
+    const args = command.text.split(' ').slice();
+    if (!args[0]) {
+        await respond({ text: "Arg not detected"});
+        return;
+    }
+    await respond({ text: `${args[0]}`});
+});
+
+app.command("/notdankmemer-deposit", async ({command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    const args = command.text.split(' ').slice();
+    if (!args[0]) {
+        await respond({ text: "Please input the amount of money that you want to deposit!"});
+        return;
+    }
+    if (args[0] < 0) {
+        await respond({ text: "You can't do less than 0!" });
+        return;
+    }
+    if (args[0] > wallet) {
+        await respond({ text: "You don't have enough to deposit" });
+        return;
+    }
+    await db.add(`bank_${id}`, args[0]);
+    await db.sub(`wallet_${id}`, args[0])
+    await respond({ text: `Successfully deposited $${args[0]} into your bank account.`});
+});
+
+app.command("/notdankmemer-withdraw", async ({command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    const args = command.text.split(' ').slice();
+    if (!args[0]) {
+        await respond({ text: "Please input the amount of money that you want to withdraw!"});
+        return;
+    }
+    if (args[0] < 0) {
+        await respond({ text: "You can't do less than 0!" });
+        return;
+    }
+    if (args[0] > bank) {
+        await respond({ text: "You don't have enough to withdraw" });
+        return;
+    }
+    await db.sub(`bank_${id}`, args[0]);
+    await db.add(`wallet_${id}`, args[0])
+    await respond({ text: `Successfully withdrawed $${args[0]} into your wallet.`});
 });
 
 (async () => {
