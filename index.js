@@ -86,8 +86,43 @@ app.command("/notdankmemer-withdraw", async ({command, ack, respond}) => {
         return;
     }
     await db.sub(`bank_${id}`, args[0]);
-    await db.add(`wallet_${id}`, args[0])
+    await db.add(`wallet_${id}`, args[0]);
     await respond({ text: `Successfully withdrawed $${args[0]} into your wallet.`});
+});
+
+app.command("/notdankmemer-coinflip", async ({command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    const args = command.text.split(' ').slice();
+    if (args[0] !== "heads" && args[0] !== "tails") {
+        await respond({ text: "Heads or Tails? (Make sure it's lowercased)"});
+        return;
+    }
+    if (!args[1]) {
+        await respond({ text: "Please input the amount of money that you want to gamble after heads or tails!"});
+        return;
+    }
+    if (args[1] < 0) {
+        await respond({ text: "You can't do less than 0!"});
+        return;
+    }
+    if (args[1] > bank) {
+        await respond({ text: "You don't have enough in your bank account, make sure to deposit some!"});
+        return;
+    }
+    const random = Math.round(Math.random());
+    const result = random ? "heads" : "tails";
+    if (args[0] === result) {
+        await db.add(`bank_${id}`, args[1]);
+        await respond({ text: `Congrats, you have won $${args[1]}! It has been deposited in your bank account.` });
+        return;
+    } else {
+        await db.sub(`bank_${id}`, args[1]);
+        await respond({ text: `Oof, you have lost $${args[1]} in your bank account.` });
+        return;
+    }
 });
 
 (async () => {
