@@ -18,13 +18,13 @@ app.command("/notdankmemer-ping", async ({ command, ack, respond }) => {
     await respond({ text: `Pong!\nLatency: ${latency}ms`});
 });
 
-app.command("/notdankmemer-grant", async ({ command, ack, respond}) => {
+/*app.command("/notdankmemer-grant", async ({ command, ack, respond}) => {
     await ack();
     const id = command.user_id;
     const wallet = await db.get(`wallet_${id}`) || 0;
     db.add(`wallet_${id}`, 30)
     await respond({ text: `Granted $30 into your wallet!`});
-});
+});*/
 
 app.command("/notdankmemer-balance", async ({ command, ack, respond}) => {
     await ack();
@@ -123,6 +123,43 @@ app.command("/notdankmemer-coinflip", async ({command, ack, respond}) => {
         await respond({ text: `Oof, you have lost $${args[1]} in your bank account.` });
         return;
     }
+});
+
+app.command("/notdankmemer-daily", async ({command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    const cooldown = await db.get(`dailycooldown_${id}`) || 0;
+    if (cooldown > Date.now()) {
+        const timeremain = cooldown - Date.now();
+        const hours = Math.floor(( timeremain / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor(( timeremain / (1000 * 60)) % 60);
+        await respond({ text: `You already have claimed your daily money! Come back in ${hours} hours and ${minutes} minutes.`});
+        return;
+    }
+    await db.add(`bank_${id}`, 500);
+    await db.add(`dailycooldown_${id}`, Date.now() + 24 * 60 * 60 * 1000);
+    await respond({ text: "You have claimed your daily $500!" });
+});
+
+app.command("/notdankmemer-weekly", async ({command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    const cooldown = await db.get(`weeklycooldown_${id}`) || 0;
+    if (cooldown > Date.now()) {
+        const timeremain = cooldown - Date.now();
+        const days = Math.floor( timeremain / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(( timeremain / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor(( timeremain / (1000 * 60)) % 60);
+        await respond({ text: `You already have claimed your weekly money! Come back in ${days} days, ${hours} hours and ${minutes} minutes.`});
+        return;
+    }
+    await db.add(`bank_${id}`, 3500);
+    await db.add(`weeklycooldown_${id}`, Date.now() + 7 * 24 * 60 * 60 * 1000 );
+    await respond({ text: "You have claimed your weekly $3500!" });
 });
 
 (async () => {
