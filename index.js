@@ -36,7 +36,68 @@ app.command("/notdankmemer-balance", async ({ command, ack, respond}) => {
 
 app.command("/notdankmemer-shop", async ({ command, ack, respond}) => {
     await ack();
-    await respond({ text: "Shop: $10000 for fishing pool and 5 baits (a), $1000 for 3 baits (b), and $5000 for a shovel (c). Tip: Type /notdankmemer-buy (a or b or c) to buy a item from the shop!" });
+    await respond({ text: "Shop: $10000 for fishing rod and 5 baits (a), $1000 for 3 baits (b), and $5000 for a shovel (c). Tip: Type /notdankmemer-buy (a or b or c) to buy a item from the shop!" });
+});
+
+app.command("/notdankmemer-buy", async ({ command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    const fishingrod = await db.get(`fish_${id}`) || 0;
+    const shovel = await db.get(`shovel_${id}`) || 0;
+    const args = command.text.split(' ').slice();
+    if (!args[0]) {
+        await respond({ text: "Please give the letter of the item that you want to buy in shop! Use /notdankmemer-shop to browse the item's letter and price." });
+        return;
+    }
+    if (args[0] !== "a" && args[0] !== "b" && args[0] !== "c") {
+        await respond({ text: "Invalid choice, make sure the items letters are lowercased!" });
+        return;
+    }
+    if (args[0] === "a") {
+        if (bank < 10000) {
+            await respond({ text: "You can't afford it, make sure to deposit in your bank if you have the money!"});
+            return;
+        }
+        if (fishingrod === 1) {
+            await respond({ text: "You already have a fishing rod! If you want to buy bait, buy item B."});
+            return;
+        }
+        await db.sub(`bank_${id}`, 10000);
+        await db.add(`bait_${id}`, 5);
+        await db.add(`fish_${id}`, 1);
+        await respond({ text: "Successfully bought items for $10000, thank you for your purchase!" });
+        return;
+    }
+    if (args[0] === "b") {
+        if (bank < 1000) {
+            await respond({ text: "You can't afford it, make sure to deposit in your bank if you have the money!"});
+            return;
+        }
+        if (fishingrod === 0) {
+            await respond({ text: "You don't have a fishing rod to buy this, make sure to buy a fishing rod first!" });
+            return;
+        }
+        await db.sub(`bank_${id}`, 1000);
+        await db.add(`bait_${id}`, 3);
+        await respond({ text: "Successfully bought items for $1000, thank you for your purchase!" });
+        return;
+    }
+    if (args[0] === "c") {
+        if (bank < 5000) {
+            await respond({ text: "You can't afford it, make sure to deposit in your bank if you have the money!"});
+            return;
+        }
+        if (shovel === 1) {
+            await respond({ text: "You already have a shovel!" });
+            return;
+        }
+        await db.sub(`bank_${id}`, 5000);
+        await db.add(`shovel_${id}`, 1);
+        await respond({ text: "Successfully bought shovel for $5000, thank you for your purchase!" });
+        return;
+    }
 });
 
 app.command("/notdankmemer-beg", async ({ command, ack, respond}) => {
