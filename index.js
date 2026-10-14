@@ -34,7 +34,30 @@ app.command("/notdankmemer-balance", async ({ command, ack, respond}) => {
     await respond({ text: `Your have $${wallet} in your wallet and $${bank} in your bank account`});
 });
 
-app.command("/notdankmemer-repeat", async ({command, ack, respond}) => {
+app.command("/notdankmemer-shop", async ({ command, ack, respond}) => {
+    await ack();
+    await respond({ text: "Shop: $10000 for fishing pool and 5 baits (a), $1000 for 3 baits (b), and $5000 for a shovel (c). Tip: Type /notdankmemer-buy (a or b or c) to buy a item from the shop!" });
+});
+
+app.command("/notdankmemer-beg", async ({ command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const wallet = await db.get(`wallet_${id}`) || 0;
+    const bank = await db.get(`bank_${id}`) || 0;
+    const begcooldown = await db.get(`begcooldown_${id}`) || 0;
+    if (begcooldown > Date.now()) {
+        const timeremain = begcooldown - Date.now();
+        const seconds = Math.floor(( timeremain / 1000) % 60);
+        await respond({ text: `Please wait until ${seconds} seconds to use the beg command again.`});
+        return;
+    }
+    const money = Math.floor(Math.random() * (500 - 10 + 1)) + 10; // very random equation
+    await db.add(`wallet_${id}`, money);
+    await db.add(`begcooldown_${id}`, Date.now() + 60 * 1000);
+    await respond({ text: `You have begged for hours and got $${money}`});
+});
+
+/*app.command("/notdankmemer-repeat", async ({command, ack, respond}) => {
     await ack();
     const args = command.text.split(' ').slice();
     if (!args[0]) {
@@ -42,7 +65,7 @@ app.command("/notdankmemer-repeat", async ({command, ack, respond}) => {
         return;
     }
     await respond({ text: `${args[0]}`});
-});
+});*/
 
 app.command("/notdankmemer-deposit", async ({command, ack, respond}) => {
     await ack();
@@ -63,7 +86,7 @@ app.command("/notdankmemer-deposit", async ({command, ack, respond}) => {
         return;
     }
     await db.add(`bank_${id}`, args[0]);
-    await db.sub(`wallet_${id}`, args[0])
+    await db.sub(`wallet_${id}`, args[0]);
     await respond({ text: `Successfully deposited $${args[0]} into your bank account.`});
 });
 
