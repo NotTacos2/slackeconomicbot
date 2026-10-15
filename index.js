@@ -100,6 +100,49 @@ app.command("/notdankmemer-buy", async ({ command, ack, respond}) => {
     }
 });
 
+app.command("/notdankmemer-items", async ({ command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const commonfish = await db.get(`commonfish_${id}`) || 0;
+    const rarefish = await db.get(`rarefish_${id}`) || 0;
+    const legendaryfish = await db.get(`legandaryfish_${id}`) || 0;
+    const commonartifact = await db.get(`commonartifact_${id}`) || 0;
+    const rareartifact = await db.get(`rareartifact_${id}`) || 0;
+    const legendaryartifact = await db.get(`legendaryartifact_${id}`) || 0;
+    await respond({ text: `You have ${commonfish} common fishes, ${rarefish} rare fishes, ${legendaryfish} legendary fishes, ${commonartifact} common artifacts, ${rareartifact} rare artifacts, ${legendaryartifact} legendary artifacts.`});
+});
+
+app.command("/notdankmemer-fish", async ({ command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const fisher = await db.get(`fish_${id}`) || 0;
+    const baits = await db.get(`bait_${id}`) || 0;
+    if (fisher === 0) {
+        await respond({ text: "You don't have a fishing rod, get a fishing rod from the shop!"});
+        return;
+    }
+    if (baits === 0) {
+        await respond({ text: "You don't have any baits, go get some baits from the shop!"});
+        return;
+    }
+    if (Math.random() < 0.9) { // since we need a 1% chance we kinda need to include else ifs
+        await db.add(`commonfish_${id}`, 1);
+        await db.sub(`bait_${id}`, 1);
+        await respond({ text: "Congrats, you fished and got a common fish!"});
+        return;
+    } else if (Math.random() < 0.99) {
+        await db.add(`rarefish_${id}`, 1);
+        await db.sub(`bait_${id}`, 1);
+        await respond({ text: "Wow, you fished and got a rare fish!!"});
+        return;
+    } else {
+        await db.add(`legendaryfish_${id}`, 1);
+        await db.sub(`bait_${id}`, 1);
+        await respond({ text: "OMG!! You fished and got a LEGENDARY FISH!!!!"});
+        return;
+    }
+});
+
 app.command("/notdankmemer-beg", async ({ command, ack, respond}) => {
     await ack();
     const id = command.user_id;
