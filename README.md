@@ -2,7 +2,7 @@
 This bot is heavily influenced by Dank Memer, one of the most used economic discord bot.
 
 ## Demo (Adding it to your slack workspace):
-- [Link](https://slack.com/oauth/v2/authorize?client_id=8329771700082.12279523408052&team=T089PNPLL2E&install_redirect=install-on-team&scope=calls:write,commands,app_mentions:read,channels:history)
+- [Link](https://join.slack.com/t/sa-nfm8189/shared_invite/zt-4df6ophhf-5G4ntWPn~DygMxgzp_c2bQ)
 ## Features:
 - Economy system with quick.db
 - Bank system
