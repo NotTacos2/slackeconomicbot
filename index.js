@@ -18,14 +18,6 @@ app.command("/notdankmemer-ping", async ({ command, ack, respond }) => {
     await respond({ text: `Pong!\nLatency: ${latency}ms`});
 });
 
-/*app.command("/notdankmemer-grant", async ({ command, ack, respond}) => {
-    await ack();
-    const id = command.user_id;
-    const wallet = await db.get(`wallet_${id}`) || 0;
-    db.add(`wallet_${id}`, 30)
-    await respond({ text: `Granted $30 into your wallet!`});
-});*/
-
 app.command("/notdankmemer-balance", async ({ command, ack, respond}) => {
     await ack();
     const id = command.user_id;
@@ -105,11 +97,99 @@ app.command("/notdankmemer-items", async ({ command, ack, respond}) => {
     const id = command.user_id;
     const commonfish = await db.get(`commonfish_${id}`) || 0;
     const rarefish = await db.get(`rarefish_${id}`) || 0;
-    const legendaryfish = await db.get(`legandaryfish_${id}`) || 0;
+    const legendaryfish = await db.get(`legendaryfish_${id}`) || 0;
     const commonartifact = await db.get(`commonartifact_${id}`) || 0;
     const rareartifact = await db.get(`rareartifact_${id}`) || 0;
     const legendaryartifact = await db.get(`legendaryartifact_${id}`) || 0;
-    await respond({ text: `You have ${commonfish} common fishes, ${rarefish} rare fishes, ${legendaryfish} legendary fishes, ${commonartifact} common artifacts, ${rareartifact} rare artifacts, ${legendaryartifact} legendary artifacts.`});
+    await respond({ text: `You have ${commonfish} common fishes (ID: cf), ${rarefish} rare fishes (ID: rf), ${legendaryfish} legendary fishes (ID: lf), ${commonartifact} common artifacts (ID: ca), ${rareartifact} rare artifacts (ID: ra), ${legendaryartifact} legendary artifacts (ID: la).`});
+});
+
+app.command("/notdankmemer-sell", async ({ command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const args = command.text.split(' ').slice();
+    const commonfish = await db.get(`commonfish_${id}`) || 0;
+    const rarefish = await db.get(`rarefish_${id}`) || 0;
+    const legendaryfish = await db.get(`legendaryfish_${id}`) || 0;
+    const commonartifact = await db.get(`commonartifact_${id}`) || 0;
+    const rareartifact = await db.get(`rareartifact_${id}`) || 0;
+    const legendaryartifact = await db.get(`legendaryartifact_${id}`) || 0;
+    if (!args[0]) {
+        await respond({ text: "Please input the item id that you want to sell! (Get item ids by /notdankmemer-items)"});
+        return;
+    }
+    if (args[0] !== "cf" && args[0] !== "rf" && args[0] !== "lf" && args[0] !== "ca" && args[0] !== "ra" && args[0] !== "la") {
+        await respond({ text: "Invalid Item ID, make sure to get item ids by using /notdankmemer-items!"});
+        return;
+    }
+    if (!args[1]) {
+        await respond({ text: "Please input how much you would like to sell!" });
+        return;
+    }
+    if (args[1] <= 0) {
+        await respond({ text: "You cannot sell less than 0 or equal to 0!" });
+        return;
+    }
+    if (args[0] === "cf" && args[1] > commonfish) {
+        await respond({ text: "You don't have that amount of common fish!" });
+        return;
+    }
+    if (args[0] === "rf" && args[1] > rarefish) {
+        await respond({ text: "You don't have that amount of rare fish!" });
+        return;
+    }
+    if (args[0] === "lf" && args[1] > legendaryfish) {
+        await respond({ text: "You don't have that amount of legendary fish!" });
+        return;
+    }
+    if (args[0] === "ca" && args[1] > commonartifact) {
+        await respond({ text: "You don't have that amount of common artifact!" });
+        return;
+    }
+    if (args[0] == "ra" && args[1] > rareartifact) {
+        await respond({ text: "You don't have that amount of rare artifact!" });
+        return;
+    }
+    if (args[0] == "la" && args[1] > legendaryartifact) {
+        await respond({ text: "You don't have that amount of legendary artifact!" });
+        return;
+    }
+    if (args[0] === "cf") {
+        await db.sub(`commonfish_${id}`, args[1]);
+        await db.add(`bank_${id}`, (500 * args[1]));
+        await respond({ text: `You have sold total of ${args[1]} of common fishes for $${(500 * args[1])}! The money will be in your bank account.` });
+        return;
+    }
+    if (args[0] === "rf") {
+        await db.sub(`rarefish_${id}`, args[1]);
+        await db.add(`bank_${id}`, (3000 * args[1]));
+        await respond({ text: `You have sold total of ${args[1]} of rare fishes for $${(3000 * args[1])}! The money will be in your bank account.` });
+        return;
+    }
+    if (args[0] === "lf") {
+        await db.sub(`legendaryfish_${id}`, args[1]);
+        await db.add(`bank_${id}`, (15000 * args[1]));
+        await respond({ text: `You have sold total of ${args[1]} of legendary fishes for $${(15000 * args[1])}! The money will be in your bank account.` });
+        return;
+    }
+    if (args[0] === "ca") {
+        await db.sub(`commonartifact_${id}`, args[1]);
+        await db.add(`bank_${id}`, (300 * args[1]));
+        await respond({ text: `You have sold total of ${args[1]} of common artifacts for $${(300 * args[1])}! The money will be in your bank account.` });
+        return;
+    }
+    if (args[0] === "ra") {
+        await db.sub(`rareartifact_${id}`, args[1]);
+        await db.add(`bank_${id}`, (1500 * args[1]));
+        await respond({ text: `You have sold total of ${args[1]} of rare artifacts for $${(1500 * args[1])}! The money will be in your bank account.` });
+        return;
+    }
+    if (args[0] === "la") {
+        await db.sub(`legendaryartifact_${id}`, args[1]);
+        await db.add(`bank_${id}`, (10000 * args[1]));
+        await respond({ text: `You have sold total of ${args[1]} of legendary artifacts for $${(10000 * args[1])}! The money will be in your bank account.` });
+        return;
+    }
 });
 
 app.command("/notdankmemer-fish", async ({ command, ack, respond}) => {
@@ -118,7 +198,7 @@ app.command("/notdankmemer-fish", async ({ command, ack, respond}) => {
     const fisher = await db.get(`fish_${id}`) || 0;
     const baits = await db.get(`bait_${id}`) || 0;
     if (fisher === 0) {
-        await respond({ text: "You don't have a fishing rod, get a fishing rod from the shop!"});
+        await respond({ text: "You don't have a fishing rod, go get a fishing rod from the shop!"});
         return;
     }
     if (baits === 0) {
@@ -143,6 +223,39 @@ app.command("/notdankmemer-fish", async ({ command, ack, respond}) => {
     }
 });
 
+app.command("/notdankmemer-dig", async ({ command, ack, respond}) => {
+    await ack();
+    const id = command.user_id;
+    const shovel = await db.get(`shovel_${id}`) || 0;
+    const digcooldown = await db.get(`digcooldown_${id}`) || 0;
+    if (shovel === 0) {
+        await respond({ text: "You don't have a shovel, go get a shovel from the shop!"});
+        return;
+    }
+    if (digcooldown > Date.now()) {
+        const timeremain = digcooldown - Date.now();
+        const seconds = Math.floor(( timeremain / 1000) % 60);
+        await respond({ text: `Please wait until ${seconds} seconds to dig artifacts again.`});
+        return;
+    }
+    if (Math.random() < 0.9) {
+        await db.add(`commonartifact_${id}`, 1);
+        await db.set(`digcooldown_${id}`, Date.now() + 60 * 1000);
+        await respond({ text: "Congrats, you dug and got a common artifact!"});
+        return;
+    } else if (Math.random() < 0.99) {
+        await db.add(`rareartifact_${id}`, 1);
+        await db.set(`digcooldown_${id}`, Date.now() + 60 * 1000);
+        await respond({ text: "Wow, you dug and got a rare artifact!!"});
+        return;
+    } else {
+        await db.add(`legendaryartifact_${id}`, 1);
+        await db.set(`digcooldown_${id}`, Date.now() + 60 * 1000);
+        await respond({ text: "OMG!! You dug and got a LEGENDARY ARTIFACT!!!"});
+        return;
+    }
+});
+
 app.command("/notdankmemer-beg", async ({ command, ack, respond}) => {
     await ack();
     const id = command.user_id;
@@ -157,19 +270,9 @@ app.command("/notdankmemer-beg", async ({ command, ack, respond}) => {
     }
     const money = Math.floor(Math.random() * (500 - 10 + 1)) + 10; // very random equation
     await db.add(`wallet_${id}`, money);
-    await db.add(`begcooldown_${id}`, Date.now() + 60 * 1000);
+    await db.set(`begcooldown_${id}`, Date.now() + 60 * 1000);
     await respond({ text: `You have begged for hours and got $${money}`});
 });
-
-/*app.command("/notdankmemer-repeat", async ({command, ack, respond}) => {
-    await ack();
-    const args = command.text.split(' ').slice();
-    if (!args[0]) {
-        await respond({ text: "Arg not detected"});
-        return;
-    }
-    await respond({ text: `${args[0]}`});
-});*/
 
 app.command("/notdankmemer-deposit", async ({command, ack, respond}) => {
     await ack();
@@ -181,8 +284,8 @@ app.command("/notdankmemer-deposit", async ({command, ack, respond}) => {
         await respond({ text: "Please input the amount of money that you want to deposit!"});
         return;
     }
-    if (args[0] < 0) {
-        await respond({ text: "You can't do less than 0!" });
+    if (args[0] <= 0) {
+        await respond({ text: "You can't do less or equal to 0!" });
         return;
     }
     if (args[0] > wallet) {
@@ -204,8 +307,8 @@ app.command("/notdankmemer-withdraw", async ({command, ack, respond}) => {
         await respond({ text: "Please input the amount of money that you want to withdraw!"});
         return;
     }
-    if (args[0] < 0) {
-        await respond({ text: "You can't do less than 0!" });
+    if (args[0] <= 0) {
+        await respond({ text: "You can't do less or equal to 0!" });
         return;
     }
     if (args[0] > bank) {
@@ -223,6 +326,10 @@ app.command("/notdankmemer-coinflip", async ({command, ack, respond}) => {
     const wallet = await db.get(`wallet_${id}`) || 0;
     const bank = await db.get(`bank_${id}`) || 0;
     const args = command.text.split(' ').slice();
+    if (!args[0]) {
+        await respond({ text: "Please put heads or tails as your coin to flip (Make sure it's lowercased)"});
+        return;
+    }
     if (args[0] !== "heads" && args[0] !== "tails") {
         await respond({ text: "Heads or Tails? (Make sure it's lowercased)"});
         return;
@@ -231,8 +338,8 @@ app.command("/notdankmemer-coinflip", async ({command, ack, respond}) => {
         await respond({ text: "Please input the amount of money that you want to gamble after heads or tails!"});
         return;
     }
-    if (args[1] < 0) {
-        await respond({ text: "You can't do less than 0!"});
+    if (args[1] <= 0) {
+        await respond({ text: "You can't do less or equal to 0!"});
         return;
     }
     if (args[1] > bank) {
@@ -265,8 +372,8 @@ app.command("/notdankmemer-daily", async ({command, ack, respond}) => {
         await respond({ text: `You already have claimed your daily money! Come back in ${hours} hours and ${minutes} minutes.`});
         return;
     }
-    await db.add(`bank_${id}`, 500);
-    await db.add(`dailycooldown_${id}`, Date.now() + 24 * 60 * 60 * 1000);
+    await db.add(`bank_${id}`, 50000);
+    await db.set(`dailycooldown_${id}`, Date.now() + 24 * 60 * 60 * 1000);
     await respond({ text: "You have claimed your daily $500!" });
 });
 
@@ -285,7 +392,7 @@ app.command("/notdankmemer-weekly", async ({command, ack, respond}) => {
         return;
     }
     await db.add(`bank_${id}`, 3500);
-    await db.add(`weeklycooldown_${id}`, Date.now() + 7 * 24 * 60 * 60 * 1000 );
+    await db.set(`weeklycooldown_${id}`, Date.now() + 7 * 24 * 60 * 60 * 1000 );
     await respond({ text: "You have claimed your weekly $3500!" });
 });
 
