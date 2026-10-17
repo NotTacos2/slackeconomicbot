@@ -1,7 +1,7 @@
 # Slack Economic Bot
 This bot is heavily influenced by Dank Memer, one of the most used economic discord bot.
 
-## Demo (Adding it to your slack workspace):
+## Demo:
 - [Link](https://join.slack.com/t/sa-nfm8189/shared_invite/zt-4df6ophhf-5G4ntWPn~DygMxgzp_c2bQ)
 ## Features:
 - Economy system with quick.db
