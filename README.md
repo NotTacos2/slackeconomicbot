@@ -1,9 +1,10 @@
 # Slack Economic Bot
 This bot is heavily influenced by Dank Memer, one of the most used economic discord bot.
 
-## Current Features (Day 7 of today):
+## Features:
 - Economy system with quick.db
 - Bank system
-- Daily and weekly (including beg)
-- Shop system
+- Daily and weekly (including beg and coinflip)
+- Shop and selling system
 - Fishing system with baits
+- Digging system with shovel and cooldown
