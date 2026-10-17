@@ -372,7 +372,7 @@ app.command("/notdankmemer-daily", async ({command, ack, respond}) => {
         await respond({ text: `You already have claimed your daily money! Come back in ${hours} hours and ${minutes} minutes.`});
         return;
     }
-    await db.add(`bank_${id}`, 50000);
+    await db.add(`bank_${id}`, 500);
     await db.set(`dailycooldown_${id}`, Date.now() + 24 * 60 * 60 * 1000);
     await respond({ text: "You have claimed your daily $500!" });
 });
