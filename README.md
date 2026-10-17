@@ -10,3 +10,5 @@ This bot is heavily influenced by Dank Memer, one of the most used economic disc
 - Shop and selling system
 - Fishing system with baits
 - Digging system with shovel and cooldown
+## Credits:
+**Dank Memer**- Inspiration for this bot
