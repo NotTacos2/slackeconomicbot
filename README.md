@@ -10,5 +10,19 @@ This bot is heavily influenced by Dank Memer, one of the most used economic disc
 - Shop and selling system
 - Fishing system with baits
 - Digging system with shovel and cooldown
+- ## Commands:
+/notdankmemer-ping - Pong!
+/notdankmemer-balance - checks your bank and wallet balance
+/notdankmemer-withdraw - withdraws your money
+/notdankmemer-deposit - deposit your money
+/notdankmemer-coinflip - heads ot tails?
+/notdankmemer-shop - what's in the shop?
+/notdankmemer-items - checks your items!
+/notdankmemer-dig - digs with your shovel!
+/notdankmemer-buy - buy an item in the shop!
+/notdankmemer-sell - sell your items!
+/notdankmemer-beg - beg for money!
+/notdankmemer-weekly - gets weekly money
+/notdankmemer-daily - gets daily money
 ## Credits:
 **Dank Memer**- Inspiration for this bot
