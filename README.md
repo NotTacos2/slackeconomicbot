@@ -10,7 +10,7 @@ This bot is heavily influenced by Dank Memer, one of the most used economic disc
 - Shop and selling system
 - Fishing system with baits
 - Digging system with shovel and cooldown
-- ## Commands:
+## Commands:
 /notdankmemer-ping - Pong!
 /notdankmemer-balance - checks your bank and wallet balance
 /notdankmemer-withdraw - withdraws your money
